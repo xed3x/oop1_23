@@ -97,6 +97,9 @@ int main(int xx , char* argv[]){
   std::string author = "Mein String ist neu";
   std::cout << author << std::endl; return 0;   
 
+  //Die kleine Änderung
+  printf("\n");
+
 }
 /*
 
