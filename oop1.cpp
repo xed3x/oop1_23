@@ -1,6 +1,7 @@
 /* Allgemeine Fragen:
 *)Reicht die gcc 10.2.1 Version aus? 
 *)Bekommt man einen Login, um seinen eigenen Code auf eure Systeme vor der Abgabe kompilieren uns somit testen zu können? Wenn ja ab wann und wird das in der KU / VO noch angesagt?
+*)Ist ein struct mit dem Objekt gleichzusetzen oder gibt es Unterschiede?
 
 Helft mir bitte dabei und korrigiert mich, wenn nötig, ob ich das richtig lese!
 Frage / Beispiel 1 aud VO 1:
@@ -15,75 +16,110 @@ Frage / Beispiel 1 aud VO 1:
     x.1: 0x7eac0620
     x.2: 0x7eac0620
     x.3: 0x1
+Frage / Beispiel 3 aus VO 2:
+  2.1) Unter int main() werden 2 Argumente benötigt, int argc und char* argv[]. Man kann ja auch nur main(int ,argv[]) nehmen, nur bin ich mir hierbei nicht sicher ob dieses int nur zum Unterdrücken von Warnings genutzt wird oder ob es auch andere Konsequenzen hat. Welche Unterschiede entstehen bei der Nutzung von main(int, char* argv[]) zu main(int argc, char* argv[])? Was übersehe ich hier? 
+  2.2) Was mich aber eher verwirrt ist *(argv + 1)! argv ist für mich ein array, da die Eingabe will be bla bla zu einem Array gebündelt wird, sobald ein space erkannt wird. Wie kann es dann sein, dass argv + 1 funktionieren kann? In anderen Programmiersprachen als auch dieser macht man das per argv[1], womit man direkt auf die Variabe zugreifft. Mag sein, das C++ dabei auch den Namen der auszuführenden File (oop1) als 0-tes Arraymitglied implementiert, womit eine Stelle weiter (will) die Lösung sein muss. Nur wieso funktioniert das mit argv + 1?
+  2.3)Soweit ich das verstanden habe erzeugt der Compiler selbst das Array argv[], speichert es ab und übergibt per Pointer char* argv[] dies an die an die Funktion übergeben wird, an die Speicheradresse platziert wird und wir per *(argv + 1) auf die Werte abrufen ist mir der Pointer an dieser Stelle verständlich. 
 */
 
 #include <iostream>
 #include <cstdio>
 #include <string>
+#include <cstring>
 
 struct SuperHero{ char name_[30]; int power_; };
 void printHeroPointer(SuperHero* hero){ std::cout << hero->name_ << std::endl; }
 void printHeroReference(SuperHero& hero){ std::cout << hero.name_ << std::endl; }
-typedef struct _Calculation_{ int operand_a_; int operand_b_; char operator_; } Calculation;
 typedef struct _Book_ { char name_[50]; int pages_; struct _Book_* nextBook_; } Book;
 int add(int x, int y){ return x + y; }
-float  add(float x, float y){ return x + y; }
-void f(int* p, int m){
+float add(float x, float y){ return x + y; }
+
+namespace Marvel{ struct SuperHero{ char* name_; int power_; int strenght_; }; }
+namespace DC{ struct SuperHero{ char* name_; int power_; int weakness_; }; }
+
+typedef struct _Calculation_{ int operand_a_; int operand_b_; char operator_; } Calculation; // Example: Struct
+void printNumbers(char* arr, size_t length){
+  for(size_t i=0;i<length;i++)
+    if( *(arr + i) >= '0' && *(arr + i) <= '9' )
+      printf("%c", arr[i]);
+  printf("\n");
+}
+void f(int* p, int m){ // Frage / Beispiel 1:
   m = m+5; 
-  printf("1.f.1: %d\n",p);
-  printf("1.f.2: %d\n",*p);
+  printf("1.f.1: %d | 1.f.2: %d\n", p, *p);
   *p = *p + m; 
   printf("1.f.3: %d\n",*p);
   return;
 }
 int main(int xx , char* argv[]){
-  // Frage / Beispiel 1:
-  int p=5, m=10; 
-  printf("1.1: %d\n",&p);
-  f(&p,m); printf("1.2: %d\n",p + m);
+  if(1){  // Frage / Beispiel 1:
+    int p=5, m=10; 
+    printf("BSP 1:\n");
+    printf("1.1: %d\n",&p);
+    f(&p,m); printf("1.2: %d\n\n",p + m);
+  }
+  if(1){  // Frage /Beispiel 2:
+    Book b3 = { "The Return of the King", 444, NULL };
+    Book b2 = { "The Two Towers", 510, &b3 };
+    Book b1 = { "The Fellowship of the Ring", 608, &b2 };
+    printf("BSP 2: %s\n", b1.nextBook_->name_);
+  }
+  if(1){  // Frage / Beispiel 3:
+    //Aufruf: ./oop1 will be fun
+    printf("BSP 3: %s\n", *(argv + 1));
+  }
+  if(1){  // Pointerdarstellung
+    int number = 1; int* ptr; ptr = &number;
+    printf("Pointerdarstellung: &number: %p | ptr: %p | *ptr: %d \n", &number, ptr, *ptr);  //0x7fffffffdcdc, 0x7fffffffdcdc, 1
+  }
+  if(1){  // call-by-{value,reference}
+    char arr[] = {'H','a','1','4','0'};
+    printf("call-by-{value,reference}: ");
+    printNumbers(arr, sizeof(arr));
+  }
+  if(1){  // Memory Allocation
+    char* mem = (char*) malloc(sizeof(char) * 3 + 1); // mit melloc holen wir uns Speicher vom Heap ab in der Größe von (char = 1Byte) * 3 + 1 NULL Byte
+    if (mem == NULL) return 1;
+    printf("Memory Allocation: *mem(NULL): %c", *mem);
+    strcpy(mem, "ESP");
+    printf("| *mem(ESP): %p", *mem);
+    mem = (char*) realloc(mem, 4 + 1);
+    printf(" | *mem(relloc): %p", *mem); // auch realloc(mem, sizeof(char) * 4 + 1) | sizeof(char) ist immer 1 Byte, daher Mal 4
+    if(mem == NULL) return -1;
+    strcpy(mem, "OOP1");
+    printf(" | *mem(OOP1): %p", *mem);
+    free(mem); mem = NULL;
+  }
+  if(1){  // struct
+    Calculation c1 = {5,4,'+'};
+    printf("struct: %d %c %d\n",c1.operand_a_, c1.operator_,c1.operand_b_);
+  }
+  if(1){  // Ein- und Ausgabe
+    char speise[50];
+    printf("Ein- und Ausgabe: Was ist deine Lieblingsspeise? ");
+    //scanf("%s",speise);
+    printf("Meine Lieblingsspeise ist %s! \n", speise);
+  }
+  if(1){ // Unterschiede 
+    std::cout << "Unterschiede: Diese Ausgabe funktioniert NUR in C++ über #include <iostream>" << std::endl;
+    printf("Unterschiede: Diese Ausgabe funktioniert AUCH in C++ über #include <cstdio>\n");
+  }
+  if(1){  // Namespace
+    Marvel::SuperHero ironman; ironman.power_ = 9000;
+    DC::SuperHero superman; superman.power_ = 8999;
+    std::cout << "Namespaces: Ironman = " << ironman.power_ << " | Superman = " << superman.power_ << std::endl;
+  }
+  if(1){  // Referenzen
+    int a = 24601;  int& a_ref = a;  int* a_ptr = &a;
+    std::cout << "Reference: a = " << a << " | &a = " << &a << " | int& a_ref = " << a_ref << " | int* a_ptr = " << a_ptr << " | *a_ptr = " << *a_ptr << std::endl; // 24601, x, 24601, 0x7fffffffdcdc, 24601
+  }
+  if(1){}
+  if(1){}
 
-  printf("\n");
-  //Frage / Beispiel 2:
-  Book b3 = { "The Return of the King", 444, NULL };
-  Book b2 = { "The Two Towers", 510, &b3 };
-  Book b1 = { "The Fellowship of the Ring", 608, &b2 };
-  printf("%s", b1.nextBook_->name_);
-  
-  printf("\n");
-  //Frage / Beispiel 3:
-  //Aufruf: ./oop1 will be fun
-  printf("%s", *(argv + 1));
-  /*Meine Fragen zur Frage / Beispiel 3:
-      Unter int main() werden 2 Argumente benötigt, int argc und char* argv[]. Man kann ja auch nur main(int ,argv[]) nehmen, nur bin ich mir hierbei nicht sicher ob es nur zum Unterdrücken von Warnings genutzt wird, welche Konsequenzen es hat bzw. haben kann. Könnt ihr mir bitte genau erklären wieso diese int argc oder nur int unbedingt verwendet werden muss und was der Unterschied bei der Nutzung von main(int, char* argv[]) zu main(int argc, char* argv[]) ist, damit ich nichts übersehen kann? Was mich aber eher verwirrt ist *(argv + 1)! argv ist für mich ein array, da die Eingabe will be bla bla zu einem Array gebündelt wird, sobald ein space erkannt wird. Wie kann es dann sein, dass argv + 1 funktionieren kann? In anderen Programmiersprachen macht man das per argv[1], womit man direkt auf die Variabe zugreifft. Mag sein, das C++ dabei auch den Namen der auszuführenden File (oop1) als 0-tes Arraymitglied implementiert, womit eine Stelle weiter (will) die Lösung sein muss. Da ja per char* argv[] das Array vom Compiler selbst an die Speicheradresse platziert wird und wir per *(argv + 1) auf die Werte abrufen ist mir der Pointer an dieser Stelle verständlich. Liegt es nur an der veralteten Schreibweise, weil C++ diese Schreibweise übernommen hat ohne auf das neue argv[n] Modell umzusteigen oder übersehe ich da etwas?  
-  */
-
-  printf("\n\n");
-  //Pointerdarstellung
-  int number = 1;
-  int* ptr;
-  ptr = &number;
-  printf("x.1: %p\n", &number);  //0x7fffffffdcdc
-  printf("x.2: %p\n", ptr);      //0x7fffffffdcdc
-  printf("x.3: %p\n", *ptr);     // 1
-  //std::cout << "Hello World" << std::endl;
-
-  printf("\n");
-  // Ist ein struct mit dem Objekt gleichzusetzen oder gibt es Unterschiede?
-  Calculation c1 = {5,4,'+'};
-  // Anscheinend autodetect was was ist
-  printf("%d %c %d\n",c1.operand_a_, c1.operator_,c1.operand_b_);
-
-  printf("\n");
-  int a = 24601;
-  int& a_ref = a;
-  int* a_ptr = &a;
-
-  std::cout << a << std::endl;        //24601
-  std::cout << &a << std::endl;       //0x7ea44544
-  std::cout << *&a << std::endl;      //24601
-  std::cout << a_ref << std::endl;    //24601
-  std::cout << a_ptr << std::endl;    //0x7fffffffdcdc
-  std::cout << *a_ptr << std::endl;   //24601
+  //std::cout << *&a << std::endl;      //24601
+  //std::cout << a_ref << std::endl;    //24601
+  //std::cout << a_ptr << std::endl;    //0x7fffffffdcdc
+  //std::cout << *a_ptr << std::endl;   //24601
 
   printf("\n");  
   SuperHero ironman = {"Tony Stark",9000};
