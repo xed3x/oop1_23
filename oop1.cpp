@@ -1,8 +1,20 @@
 /* Allgemeine Fragen:
-Reicht die gcc 10.2.1 Version aus ? 
-Bekommt man einen Login, um seinen eigenen Code auf eure Systeme vor der Abgabe kompilieren uns somit testen zu können? Wenn ja ab wann und wird das in der KU / VO noch angesagt?
+*)Reicht die gcc 10.2.1 Version aus? 
+*)Bekommt man einen Login, um seinen eigenen Code auf eure Systeme vor der Abgabe kompilieren uns somit testen zu können? Wenn ja ab wann und wird das in der KU / VO noch angesagt?
 
-Helft mir bitte dabei und korrigiert mich, wenn nötig, ob ich das richtig lese! egal ob Logik oder Fehler in der Begriffsnutzung
+Helft mir bitte dabei und korrigiert mich, wenn nötig, ob ich das richtig lese!
+Frage / Beispiel 1 aud VO 1:
+  Man hat void main wo per & im f(&p,m) die Adresse (0x7...) übergeben wird (Was bei mir laut Ubuntu mit dem Output 1.1 den Wert 2126214692 hat, somit kein 0x..., wieso?) Dann wiederum per void f(...) mit dem int* veranlasst wird, dass nur ein Pointer als Eingabe erlaubt wird, (was aus meiner Sicht etwas unlogisch erscheint, da & != * sein sollte. Hätte man hier nicht einfach int& p nehmen können, damit man sich das *-Sternchen ersparen hätte können?) damit dann per *p die Zahl über die gleiche Adresse wieder angesprochen wird (wie laut Output 1.f.2), um die Rechnung per *p + m zu ermöglichen. Dann muss man wieder *p = ... setzen, damit C++ versteht, dass es nur den Wert auf exakt der eingegebenen Adresse unter p verändern soll, damit kein neuen Speicher reservieren wird (Was aus meiner Sicht etwas strange ist, da ja p per int* p so oder so nur das sein kann / soll) Übersehe ich da etwas oder ist genau sowas der Grund, wieso viele Firmen wie google und co. nicht ohne Grund (zum Eigenschutz, etc.) eigene Programmiersprachen entwickeln, um von dieser Logik weg zu kommen. Zwischeninfo: Und nein, objektorientierte Programmierung habe ich noch nie gebraucht, obwohl ich bereits einige riesige Projekte in php, python und js realisiert habe. Auch auf systemtechnischer Ebene habe ich lieber python statt c++ genutzt, um billige bis mittlere Securitystandards für meinen Server zu entwickeln
+  Output: g++ oop1.cpp -o foo && ./oop1
+    1.1: 2125202980
+    1.f.1: 2125202980
+    1.f.2: 5
+    1.f.3: 20
+    1.2: 30
+
+    x.1: 0x7eac0620
+    x.2: 0x7eac0620
+    x.3: 0x1
 */
 
 #include <iostream>
@@ -29,19 +41,6 @@ int main(int xx , char* argv[]){
   int p=5, m=10; 
   printf("1.1: %d\n",&p);
   f(&p,m); printf("1.2: %d\n",p + m);
-  /*Meine Fragen zur Frage / Beispiel 1:
-      Man hat void main wo per & im f(&p,m) die Adresse (0x7...) übergeben wird (Was bei mir laut Ubuntu mit dem Output 1.1 den Wert 2126214692 hat, somit kein 0x..., wieso?) Dann wiederum per void f(...) mit dem int* veranlasst wird, dass nur ein Pointer als Eingabe erlaubt wird, (was aus meiner Sicht etwas unlogisch erscheint, da & != * sein sollte. Hätte man hier nicht einfach int& p nehmen können, damit man sich das *-Sternchen ersparen hätte können?) damit dann per *p die Zahl über die gleiche Adresse wieder angesprochen wird (wie laut Output 1.f.2), um die Rechnung per *p + m zu ermöglichen. Dann muss man wieder *p = ... setzen, damit C++ versteht, dass es nur den Wert auf exakt der eingegebenen Adresse unter p verändern soll, damit kein neuen Speicher reservieren wird (Was aus meiner Sicht etwas strange ist, da ja p per int* p so oder so nur das sein kann / soll) Übersehe ich da etwas oder ist genau sowas der Grund, wieso viele Firmen wie google und co. nicht ohne Grund (zum Eigenschutz, etc.) eigene Programmiersprachen entwickeln, um von dieser Logik weg zu kommen. Zwischeninfo: Und nein, objektorientierte Programmierung habe ich noch nie gebraucht, obwohl ich bereits einige riesige Projekte in php, python und js realisiert habe. Auch auf systemtechnischer Ebene habe ich lieber python statt c++ genutzt, um billige bis mittlere Securitystandards für meinen Server zu entwickeln
-      Output: g++ oop1.cpp -o foo && ./oop1
-        1.1: 2125202980
-        1.f.1: 2125202980
-        1.f.2: 5
-        1.f.3: 20
-        1.2: 30
-
-        x.1: 0x7eac0620
-        x.2: 0x7eac0620
-        x.3: 0x1
-  */
 
   printf("\n");
   //Frage / Beispiel 2:
