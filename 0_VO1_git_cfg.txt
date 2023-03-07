@@ -1,0 +1,88 @@
+Installation laut [1]:
+----------------------
+1. git auf git-scm.com downloaden + starten -> ... -> Editor Visual Studio Code as git' default editor auswählen -> Overwrite the default branch name to main -> use bundle OpenSSH -> Use the OpenSSL library -> Checkout Windows style, commit Unix-style line endings -> Use MinTTY -> git pull: Default (fast forward or merge) -> Git Credential Manager -> Configure extra options: Enable file system caching -> Configuring experimental features: nichts auswählen
+2. Für Windows: Unter Einstellungen -> System -> Info -> Erweiterte Einstellungen -> Umgebungsvariablen -> Path auswählen + Bearbeiten -> Neu -> C:\Program Files\Git\bin eintragen -> 3x OK -> VSCode neustarten -> Unter VSCode View/Terminal sollte nun per git --version nun alles klappen
+
+Overview Begriffe laut [6]:
+---------------------------
+  Repository bedeutet: Verwaltungsstruktur .git (Ordner samt Dateien), die per git init Befehl erstellt wird
+  Committed bedeutet, dass die Daten sicher in der lokalen Datenbank gespeichert sind. Ein sogenannter Schnappschuss wird erstellt
+  Staged bedeutet, dass eine geänderte Datei in ihrem gegenwärtigen Zustand für den nächsten Commit vorgemerkt ist. Anders gesagt werden per commit / Schnappschuss die Dateien zur Stagearea hinzugefügt
+  Modified bedeutet, dass eine Datei geändert, aber noch nicht in die lokale Datenbank eingecheckt wurde.
+  Checkouts: Über den Befehl git checkout kannst du zwischen Branches wechseln, die du mit git branch erstellt hast
+  Branch bedeutet: Git-Branches sind quasi Verweise auf einen Snapshot deiner Änderungen
+
+CMD Overview laut [5]:
+----------------------
+  Direkt ausführbare:
+    git init (initialisiert einen ordner und erstellt somit ein repository), 
+    git status (Infos zu Dateien und Status für merge),
+    git log (Auflistung aller der committed files), 
+  Nur mit Parameter:
+    git config (ändert cfg wie name, email, etc. Alles was unter --list zu sehen ist), 
+      git config --list
+      git config --global --add safe.directory '%(prefix)///192.x.x.x/restricted/oop1'
+    git add (fügt eine Datei zum repository hinzu), 
+    git commit (commit change to head but not to the remote), 
+      git commit -m "1st try info"
+    git merge (merge an branch into an active branch), 
+    git reset (Undo local changes to the state of a git repo), 
+    git diff (view the changes made to the file), 
+    git push (upload local repository to server),
+      git push -u origin main
+    git pull (download repository) 
+    git branch (erzegt einen neuen Verweis)
+    git remote (fügt auf dem gitserver die repository hinzu)
+
+Leichte cfg laut [1]: 
+---------------------
+Email + Name für commits im Terminal einstellen: 
+  git config --global user.name "<DEIN NAME>"
+  git config --global user.email "<DEINE EMAIL>"
+  Grund: Kann im Nachhinein bei den Commits nicht mehr geändert werden, daher sollte man es als erstes anpassen
+
+Overview Vorgehensweise:
+------------------------
+1. Per git init im Ordner die repository erstellen
+2. Wenn man die Dateien weitgehend erstellt und bearbeitet hat per git add <file1 file2 ...> oder git add . alle Änderung aus dem Arbeitsverzeichnis zur Staging-Umgebung hinzufügen 
+3. Per git commit -m "finished ToDo Nr.N" einen sogenannten Snapshot der Dateien bzw. Grundbausteine einer Git-Projektzeitleiste erzeugen
+4. Per git push -u origin main kann man die repository auf den github server hochladen
+5. Weitere Infos zu Punkt 1 bis 4 kommt noch
+
+Repository (.git file im Ordner), adden, committen undpushen laut [1-6]:
+--------------------------------------------------------------------------------
+1. In den Ordner reingehen, den man als repository (.git) erstellen möchte! In meinem Fall ist das F:\oop1
+2. git init -> Initialized empty Git repository in F:\oop1
+    -> Wird ein Fehler ausgegeben: Fatal: detected dubious ownership in repository at '//192.x.x.x/restricted/oop1'
+      daher -> git config --global --add safe.directory '%(prefix)///192.x.x.x/restricted/oop1'
+3. Erstelle eine Datei zum Testen. BSP oop1.cpp und schreibe etwas rein
+3.1 Die Abfrage git status erzeugt folgendes: 
+      On branch main No commits yet Untracked files: (use "git add <file>..." to include in what will be committed) oop1.cpp nothing added to commit but untracked files present (use "git add" to track)
+    Untracked files bedeutet, dass diese files noch nicht vom git repository verwaltet werden. Daher muss man die Dateien zur sogenannten STAGING AREA hinzufügen und daraus kann man sich den sogenannten COMMIT zusammenbauen. Den ersten commit vom repository
+    stagen kann man per: git add <dateiname> oder git add . -> für alle Dateien
+    Vorteil der staging area: wenn man viel am Proekt gearbeitet hat, ohne dass wir viele kleine commits gemacht haben, weil wir nicht daran gedacht haben, dann können wir im staging area trotzdem diese Änderungen Schritt für Schritt in kleinen commits aufteilen und diese entsprechend committen ohne einen riesigen einzelnen commit machen zu müssen
+    Tip: commits == schnappschuss sollten immer nur eine kleist mögliche Änderung aufweisen! Grund: wenn es zu Problemen kommt, dann muss man sehr viel analysieren, um auf den Fehler zu kommen  
+4. git add . oder git add <file1 file2 ...> 
+5. git commit -m "kleine Nachricht, wird empfohlen, um leichtere Schlußfolgerungen zu ermöglichen" -> davor muss man wieder die files per add hinzufügen!
+6. git log -> zeigt alles commits an und auf welchem Head sich gerade der branch befindet 
+7. Zur Info! Durch checkouts kann man in den jeweiligen Dateien springen, um die Änderung zu sehen. Sehr praktisch!
+    git checkout <haswert unter git log> -> Vorsicht, da es nicht auf den Branch zeigt!
+    git checkout main -> man kommt wieder zur letzten main datei zurück. Man positioniert alles wieder auf den aktuellsten Stand
+8. Zur erleichterten Darstellung wird folgendes empfohlen: extension für VSCode installieren -> git graph
+9. Unter github einloggen und ein neues repository erstellen: login -> create a new repository -> oop1_23 as name -> create
+9.1 Kopiere die Adresse: git remote add origin https://github.com/<GIT USERNAME>/<DATEINAME>.git und des git push -u origin <main master etc> Befehls
+9.2 git remote add origin https://github.com/<GIT USERNAME>/<DATEINAME>.git ausführen
+9.3 git remote -v -> Dann erscheint ein Browser Popup wo man den Loginzugriff bestätigen muss
+9.4 git push -u origin main
+      Vorsicht! origin or main / master etc. kann variieren. Ich habe bei der Installation "Overwrite the default branch name to main" gewählt, sonst wäre es master gewesen!
+      Dadurch wurde die repository auf den Server übertragen. Finish!
+
+@branches richtig nutzen kommt später als addon. Brauche es jetzt überhaupt nicht! Nur den wechsel git checkout ist interessant
+
+Referenzen: 
+[1] Git Tutorial Deutsch #2 Installation und Einrichtung von Git: https://www.youtube.com/watch?v=0PWEG6D2MVQ
+[2] Git Tutorial Deutsch #4 - Git Init und Git Commit: https://www.youtube.com/watch?v=6oMBdv2rvDA
+[3] Git Tutorial Deutsch #5 - Git Checkout und HEAD: https://www.youtube.com/watch?v=0138WZebblE
+[4] Git Tutorial - Konfiguration in Visual Studio Code: https://www.youtube.com/watch?v=TCNjIKtPYUk
+[5] Git Push Command | Git Bash Tutorial | Git Commands | Git Tutorial For Beginners | Simplilearn: https://www.youtube.com/watch?v=QJ0iUNe27c8
+[6] https://git-scm.com/book/de/v2/Erste-Schritte-Was-ist-Git%3F
