@@ -76,6 +76,9 @@ Repository (.git file im Ordner), adden, committen undpushen laut [1-6]:
 9.4 git push -u origin main
       Vorsicht! origin or main / master etc. kann variieren. Ich habe bei der Installation "Overwrite the default branch name to main" gewählt, sonst wäre es master gewesen!
       Dadurch wurde die repository auf den Server übertragen. Finish!
+9.5 github repository mit gitlab per access token verbinden!
+      Auf gibhub einloggen -> rechts oben auf das Profilbild -> Settings -> links unten auf Developer settings -> Personal access tokens -> Tokens (classic) -> Generate new token -> name eingeben, expire never -> copy den generierten token 
+      auf gitlab der tu einloggen -> links oben Main Menu -> Projects View all -> new Project -> Import project from external source -> github anklicken -> token reinkopieren -> etc -> Import + warten bis es beendet wurde -> Import N repository
 
 @branches richtig nutzen kommt später als addon. Brauche es jetzt überhaupt nicht! Nur den wechsel git checkout ist interessant
 
